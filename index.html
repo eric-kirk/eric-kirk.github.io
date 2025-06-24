@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eric Kirk</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Changed align-items to flex-start to left-align the content block */
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffffff; /* Changed background to white */
+            color: #333;
+            padding-left: 50px; /* Add some padding from the left edge */
+        }
+
+        .content {
+            /* Removed text-align: center as flexbox handles alignment */
+            display: flex;
+            /* Changed align-items to flex-start to left-align content within the column */
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            /* Changed justify-content to flex-start to left-align name and picture */
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .profile-pic {
+            width: 180px; /* Adjusted profile pic size for clarity */
+            height: 180px; /* Adjusted profile pic size for clarity */
+            border-radius: 60%;
+            margin-left: 20px;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 1.7em;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            /* Ensure paragraph text is left-aligned */
+            text-align: left;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-family: sans-serif;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .links {
+          margin-top: 20px;
+          display: flex;
+          flex-direction: column;
+          /* Changed align-items to flex-start to left-align the links */
+          align-items: flex-start;
+        }
+
+        .links a {
+          margin: 5px 0;
+        }
+
+        .photo-gallery {
+            margin-top: 40px; /* Space above the photo gallery section */
+            display: grid; /* Use CSS Grid for the matrix layout */
+            grid-template-columns: repeat(3, 300px); /* 3 columns, each 150px wide */
+            grid-template-rows: repeat(2, 240px);    /* Changed to 2 rows, each 150px high */
+            gap: 10px; /* Space between photos */
+            /* Ensure the gallery itself is left-aligned within its parent (.content) */
+            justify-content: start; /* Aligns grid content to the start (left) */
+            align-content: start; /* Aligns grid content to the start (top) */
+        }
+
+        .gallery-pic {
+            width: 300px;
+            height: 240px;
+            object-fit: cover; /* Ensures images fill their box without distortion */
+            border-radius: 5px; /* Optional: subtle rounded corners for gallery photos */
+            border: 1px solid #ddd; /* Optional: light border for photos */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>Eric Kirk</h1>
+            <img src="images/IMG_profile.jpg" alt="Eric Kirk Profile Picture" class="profile-pic">
+        </div>
+        <p>I'm curious about the neurobiology of movement.</p>
+        <div class="links">
+          <a href="https://scholar.google.com/citations?user=U2jzCgYAAAAJ&hl=en/in/yourprofile">Google Scholar</a>
+          <a href="https://sauerbreilab.org/">Postdoc with Britton</a>
+          <a href="https://case.edu/medicine/neurosciences//">Neuroscience in Cleveland</a>
+          <a href = "erickirk_cv.pdf">CV</a>
+          <a href="mailto:eak152@case.edu">Email</a>
+        </div>
+
+        <div class="photo-gallery">
+            <!-- Now includes 6 images for a 2x3 matrix, assuming they are in an 'images' folder -->
+            <img src="images/IMG_1.jpg" alt="Gallery Photo 1" class="gallery-pic">
+            <img src="images/IMG_2.jpg" alt="Gallery Photo 2" class="gallery-pic">
+            <img src="images/IMG_3.jpg" alt="Gallery Photo 3" class="gallery-pic">
+            <img src="images/IMG_4.jpg" alt="Gallery Photo 4" class="gallery-pic">
+            <img src="images/IMG_5.jpg" alt="Gallery Photo 5" class="gallery-pic">
+            <img src="images/IMG_6.jpg" alt="Gallery Photo 6" class="gallery-pic">
+        </div>
+    </div>
+</body>
+</html>
