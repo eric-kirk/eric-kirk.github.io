@@ -6,38 +6,37 @@
     <title>Eric Kirk</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: sans-serif; /* Your existing font-family */
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* Changed align-items to flex-start to left-align the content block */
             align-items: flex-start;
             height: 100vh;
             margin: 0;
-            background-color: #ffffff; /* Changed background to white */
+            background-color: #ffffff;
             color: #333;
-            padding-left: 50px; /* Add some padding from the left edge */
+            padding-left: 50px;
         }
 
         .content {
-            /* Removed text-align: center as flexbox handles alignment */
             display: flex;
-            /* Changed align-items to flex-start to left-align content within the column */
             align-items: flex-start;
             flex-direction: column;
+            /* Added max-width to constrain content for better readability on large screens */
+            max-width: 900px;
+            width: 100%; /* Ensure it takes full width up to max-width */
         }
 
         .header {
             display: flex;
             align-items: center;
-            /* Changed justify-content to flex-start to left-align name and picture */
             justify-content: flex-start;
             margin-bottom: 10px;
         }
 
         .profile-pic {
-            width: 180px; /* Adjusted profile pic size for clarity */
-            height: 180px; /* Adjusted profile pic size for clarity */
+            width: 180px;
+            height: 180px;
             border-radius: 60%;
             margin-left: 20px;
             object-fit: cover;
@@ -48,10 +47,16 @@
             margin: 0;
         }
 
+        h2 { /* Styling for the new section heading */
+            font-size: 1.5em; /* Slightly smaller than h1, larger than p */
+            margin-top: 40px; /* Space above the section title */
+            margin-bottom: 20px;
+            color: #333; /* Match existing text color */
+        }
+
         p {
             font-size: 1.1em;
             margin-bottom: 20px;
-            /* Ensure paragraph text is left-aligned */
             text-align: left;
         }
 
@@ -69,7 +74,6 @@
           margin-top: 20px;
           display: flex;
           flex-direction: column;
-          /* Changed align-items to flex-start to left-align the links */
           align-items: flex-start;
         }
 
@@ -78,24 +82,105 @@
         }
 
         .photo-gallery {
-            margin-top: 40px; /* Space above the photo gallery section */
-            display: grid; /* Use CSS Grid for the matrix layout */
-            grid-template-columns: repeat(3, 300px); /* 3 columns, each 150px wide */
-            grid-template-rows: repeat(2, 240px);    /* Changed to 2 rows, each 150px high */
-            gap: 10px; /* Space between photos */
-            /* Ensure the gallery itself is left-aligned within its parent (.content) */
-            justify-content: start; /* Aligns grid content to the start (left) */
-            align-content: start; /* Aligns grid content to the start (top) */
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 300px);
+            grid-template-rows: repeat(2, 240px);
+            gap: 10px;
+            justify-content: start;
+            align-content: start;
         }
 
         .gallery-pic {
             width: 300px;
             height: 240px;
-            object-fit: cover; /* Ensures images fill their box without distortion */
-            border-radius: 5px; /* Optional: subtle rounded corners for gallery photos */
-            border: 1px solid #ddd; /* Optional: light border for photos */
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
 
+        /* New styles for the music hobby section */
+        .music-section {
+            margin-top: 40px; /* Space above the music section */
+            width: 100%; /* Ensure it takes full width of .content */
+        }
+
+        .audio-item {
+            margin-bottom: 20px; /* Space between each audio player */
+            padding: 10px;
+            border: 1px solid #eee; /* Light border similar to gallery pics */
+            border-radius: 5px; /* Rounded corners */
+            background-color: #f9f9f9; /* Slightly different background for visual separation */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Left-align content within the audio item */
+        }
+
+        .audio-item p {
+            font-weight: bold; /* Make song titles stand out */
+            margin-bottom: 10px; /* Space between title and player */
+            font-size: 1.05em; /* Slightly smaller than main paragraphs but noticeable */
+        }
+
+        .audio-item audio {
+            width: 100%; /* Make audio player fill its container */
+            max-width: 400px; /* Optional: constrain width for better aesthetics */
+            border-radius: 5px; /* Rounded corners for the player itself */
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding-left: 20px; /* Reduce padding on smaller screens */
+                padding-right: 20px; /* Add some right padding too */
+                height: auto; /* Allow body height to expand */
+            }
+
+            .content {
+                align-items: center; /* Center content block on small screens */
+                padding-left: 0;
+            }
+
+            .header {
+                flex-direction: column; /* Stack header items vertically */
+                text-align: center;
+                width: 100%;
+            }
+
+            .profile-pic {
+                margin-left: 0;
+                margin-top: 15px; /* Space between name and picture */
+            }
+
+            h1 {
+                font-size: 1.5em; /* Adjust heading size */
+            }
+
+            p, .links a {
+                font-size: 1em; /* Adjust paragraph and link size */
+                text-align: center; /* Center text for better flow on mobile */
+                width: 100%;
+            }
+
+            .links {
+                align-items: center; /* Center links */
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible columns */
+                gap: 5px; /* Smaller gap */
+                justify-content: center; /* Center gallery on small screens */
+            }
+
+            .gallery-pic {
+                width: 100%; /* Make gallery images fill column width */
+                height: auto; /* Maintain aspect ratio */
+            }
+
+            .music-section, .audio-item {
+                align-items: center; /* Center music section content */
+            }
+        }
     </style>
 </head>
 <body>
@@ -122,6 +207,63 @@
             <img src="images/IMG_5.jpg" alt="Gallery Photo 5" class="gallery-pic">
             <img src="images/IMG_6.jpg" alt="Gallery Photo 6" class="gallery-pic">
         </div>
+
+        <!-- Music Hobby Section Now Below Photo Gallery -->
+        <div id="music-hobby" class="music-section">
+            <h2>Music</h2>
+            <p>
+                Outside the lab, playing music is a passion. Here are some fun pipe organ pieces I recorded on my phone.
+            </p>
+
+            <!-- Song 1 -->
+            <div class="audio-item">
+                <p>Song Title 1 - [Description/Genre]</p>
+                <audio controls>
+                    <source src="audio/song1.m4a" type="audio/mp4">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <!-- Song 2 -->
+            <div class="audio-item">
+                <p>Song Title 2 - [Description/Genre]</p>
+                <audio controls>
+                    <source src="audio/song2.m4a" type="audio/mp4">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <!-- Song 3 -->
+            <div class="audio-item">
+                <p>Song Title 3 - [Description/Genre]</p>
+                <audio controls>
+                    <source src="audio/song3.m4a" type="audio/mp4">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <!-- Song 4 -->
+            <div class="audio-item">
+                <p>Song Title 4 - [Description/Genre]</p>
+                <audio controls>
+                    <source src="audio/song4.m4a" type="audio/mp4">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <!-- Song 5 -->
+            <div class="audio-item">
+                <p>Song Title 5 - [Description/Genre]</p>
+                <audio controls>
+                    <source src="audio/song5.m4a" type="audio/mp4">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            </p>
+        </div>
+        <!-- Music Hobby Section Ends Here -->
+
     </div>
 </body>
 </html>
