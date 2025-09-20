@@ -11,33 +11,39 @@
             background-color: #f8f9fa; /* Lighter gray background */
             color: #212529; /* Darker text for better readability */
             line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .container {
-            display: flex;
-            flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
-            max-width: 1400px;
-            margin: 0 auto; /* Center the container */
-            padding: 40px 20px; /* Add some padding */
-            gap: 40px; /* Space between the two main panels */
-            align-items: flex-start;
+            max-width: 600px;
+            width: 100%;
         }
 
         .info-panel {
-            flex: 1; /* Take up 1 part of the space */
-            min-width: 300px; /* Minimum width before wrapping */
             display: flex;
             flex-direction: column;
-            position: sticky; /* Make the info panel sticky */
-            top: 40px; /* Stick it 40px from the top */
+            align-items: flex-start; /* Align items to the left */
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+            gap: 30px; /* Space between links and picture */
         }
 
         .profile-pic {
-            width: 180px;
-            height: 180px;
+            width: 150px;
+            height: 150px;
             border-radius: 8px; /* Slightly rounded corners for the square */
             object-fit: cover;
-            margin-bottom: 20px;
+            flex-shrink: 0; /* Prevent image from shrinking if space is tight */
         }
 
         h1 {
@@ -49,7 +55,7 @@
         p {
             font-size: 1.1em;
             margin: 0 0 20px 0;
-            max-width: 450px;
+            max-width: 100%; /* Adjust max-width */
         }
 
         .links {
@@ -71,45 +77,19 @@
             text-decoration: underline;
         }
 
-        .gallery-panel {
-            flex: 2; /* Take up 2 parts of the space, making it wider */
-        }
-
-        .photo-gallery {
-            display: grid;
-            /* Responsive grid that creates columns between 280px and 1fr */
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px; /* Space between photos */
-        }
-
-        .gallery-pic {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px; /* Matching rounded corners */
-            border: 1px solid #ddd;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .gallery-pic:hover {
-            transform: scale(1.03); /* Slight zoom on hover */
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Add shadow on hover */
-        }
-
         /* Simple media query for better mobile view */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-                padding: 20px;
+            body {
+                align-items: flex-start; /* Align to top on mobile */
+                padding-top: 40px;
             }
-            .info-panel {
-                position: static; /* Remove sticky positioning on mobile */
+            .content-wrapper {
+                flex-direction: column-reverse; /* Stack picture above links */
+                align-items: center;
+                gap: 20px;
+            }
+            .info-panel, .links {
                 align-items: center; /* Center content on mobile */
-                text-align: center;
-            }
-            .links {
-                align-items: center;
             }
             h1, p {
                 text-align: center;
@@ -121,25 +101,17 @@
 <body>
     <div class="container">
         <div class="info-panel">
-            <img src="images/IMG_profile.jpg" alt="Eric Kirk Profile Picture" class="profile-pic">
             <h1>Eric Kirk</h1>
             <p>I'm a Postdoc in the Department of Neurosciences at Case Western studying the neurobiology of movement. One of my long-term research goals is to understand how changing neural dynamics shape movement across the lifespan.</p>
-            <div class="links">
-              <a href="https://scholar.google.com/citations?user=U2jzCgYAAAAJ&hl=en/in/yourprofile">Publications (Google Scholar)</a>
-              <a href="https://sauerbreilab.org/">Postdoc in the Sauerbrei Lab</a>
-              <a href="https://case.edu/medicine/neurosciences//">Neuroscience in Cleveland</a>
-              <a href = "erickirk_cv.pdf">CV</a>
-              <a href="mailto:eak152@case.edu">Email</a>
-            </div>
-        </div>
-        <div class="gallery-panel">
-            <div class="photo-gallery">
-                <img src="images/IMG_1.jpg" alt="Gallery Photo 1" class="gallery-pic">
-                <img src="images/IMG_2.jpg" alt="Gallery Photo 2" class="gallery-pic">
-                <img src="images/IMG_3.jpg" alt="Gallery Photo 3" class="gallery-pic">
-                <img src="images/IMG_4.jpg" alt="Gallery Photo 4" class="gallery-pic">
-                <img src="images/IMG_5.jpg" alt="Gallery Photo 5" class="gallery-pic">
-                <img src="images/IMG_6.jpg" alt="Gallery Photo 6" class="gallery-pic">
+            <div class="content-wrapper">
+                <div class="links">
+                  <a href="https://scholar.google.com/citations?user=U2jzCgYAAAAJ&hl=en/in/yourprofile">Publications (Google Scholar)</a>
+                  <a href="https://sauerbreilab.org/">Postdoc in the Sauerbrei Lab</a>
+                  <a href="https://case.edu/medicine/neurosciences//">Neuroscience in Cleveland</a>
+                  <a href = "erickirk_cv.pdf">CV</a>
+                  <a href="mailto:eak152@case.edu">Email</a>
+                </div>
+                <img src="images/IMG_profile.jpg" alt="Eric Kirk Profile Picture" class="profile-pic">
             </div>
         </div>
     </div>
