@@ -6,124 +6,143 @@
     <title>Eric Kirk</title>
     <style>
         body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* Changed align-items to flex-start to left-align the content block */
-            align-items: flex-start;
-            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            background-color: #ffffff; /* Changed background to white */
-            color: #333;
-            padding-left: 50px; /* Add some padding from the left edge */
-            padding-top: 150px; /* Added padding to the top */
+            background-color: #f8f9fa; /* Lighter gray background */
+            color: #212529; /* Darker text for better readability */
+            line-height: 1.6;
         }
 
-        .content {
-            /* Removed text-align: center as flexbox handles alignment */
+        .container {
             display: flex;
-            /* Changed align-items to flex-start to left-align content within the column */
+            flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
+            max-width: 1400px;
+            margin: 0 auto; /* Center the container */
+            padding: 40px 20px; /* Add some padding */
+            gap: 40px; /* Space between the two main panels */
             align-items: flex-start;
-            flex-direction: column;
         }
 
-        .header {
+        .info-panel {
+            flex: 1; /* Take up 1 part of the space */
+            min-width: 300px; /* Minimum width before wrapping */
             display: flex;
-            align-items: center;
-            /* Changed justify-content to flex-start to left-align name and picture */
-            justify-content: flex-start;
-            margin-bottom: 10px;
+            flex-direction: column;
+            position: sticky; /* Make the info panel sticky */
+            top: 40px; /* Stick it 40px from the top */
         }
 
         .profile-pic {
-            width: 180px; /* Adjusted profile pic size for clarity */
-            height: 180px; /* Adjusted profile pic size for clarity */
-            border-radius: 0;
-            margin-left: 20px;
+            width: 180px;
+            height: 180px;
+            border-radius: 8px; /* Slightly rounded corners for the square */
             object-fit: cover;
+            margin-bottom: 20px;
         }
 
         h1 {
-            font-size: 1.7em;
-            margin: 0;
+            font-size: 2.5em; /* Larger name */
+            margin: 0 0 10px 0;
+            font-weight: 600;
         }
 
         p {
             font-size: 1.1em;
-            margin-bottom: 20px;
-            /* Ensure paragraph text is left-aligned */
-            text-align: left;
-            max-width: 400px; /* Added max-width to constrain the text */
+            margin: 0 0 20px 0;
+            max-width: 450px;
+        }
+
+        .links {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px; /* Use gap for spacing */
         }
 
         a {
             color: #007bff;
             text-decoration: none;
-            font-family: sans-serif;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         a:hover {
+            color: #0056b3;
             text-decoration: underline;
         }
 
-        .links {
-          margin-top: 20px;
-          display: flex;
-          flex-direction: column;
-          /* Changed align-items to flex-start to left-align the links */
-          align-items: flex-start;
-        }
-
-        .links a {
-          margin: 5px 0;
+        .gallery-panel {
+            flex: 2; /* Take up 2 parts of the space, making it wider */
         }
 
         .photo-gallery {
-            margin-top: 40px; /* Space above the photo gallery section */
-            display: grid; /* Use CSS Grid for the matrix layout */
-            grid-template-columns: repeat(3, 300px); /* 3 columns, each 150px wide */
-            grid-template-rows: repeat(2, 240px);    /* Changed to 2 rows, each 150px high */
-            gap: 10px; /* Space between photos */
-            /* Ensure the gallery itself is left-aligned within its parent (.content) */
-            justify-content: start; /* Aligns grid content to the start (left) */
-            align-content: start; /* Aligns grid content to the start (top) */
+            display: grid;
+            /* Responsive grid that creates columns between 280px and 1fr */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; /* Space between photos */
         }
 
         .gallery-pic {
-            width: 300px;
-            height: 240px;
-            object-fit: cover; /* Ensures images fill their box without distortion */
-            border-radius: 5px; /* Optional: subtle rounded corners for gallery photos */
-            border: 1px solid #ddd; /* Optional: light border for photos */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px; /* Matching rounded corners */
+            border: 1px solid #ddd;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-pic:hover {
+            transform: scale(1.03); /* Slight zoom on hover */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Add shadow on hover */
+        }
+
+        /* Simple media query for better mobile view */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            }
+            .info-panel {
+                position: static; /* Remove sticky positioning on mobile */
+                align-items: center; /* Center content on mobile */
+                text-align: center;
+            }
+            .links {
+                align-items: center;
+            }
+            h1, p {
+                text-align: center;
+            }
         }
 
     </style>
 </head>
 <body>
-    <div class="content">
-        <div class="header">
-            <h1>Eric Kirk</h1>
+    <div class="container">
+        <div class="info-panel">
             <img src="images/IMG_profile.jpg" alt="Eric Kirk Profile Picture" class="profile-pic">
+            <h1>Eric Kirk</h1>
+            <p>I'm a Postdoc in the Department of Neurosciences at Case Western studying the neurobiology of movement. One of my long-term research goals is to understand how changing neural dynamics shape movement across the lifespan.</p>
+            <div class="links">
+              <a href="https://scholar.google.com/citations?user=U2jzCgYAAAAJ&hl=en/in/yourprofile">Publications (Google Scholar)</a>
+              <a href="https://sauerbreilab.org/">Postdoc in the Sauerbrei Lab</a>
+              <a href="https://case.edu/medicine/neurosciences//">Neuroscience in Cleveland</a>
+              <a href = "erickirk_cv.pdf">CV</a>
+              <a href="mailto:eak152@case.edu">Email</a>
+            </div>
         </div>
-        <p>I'm a Postdoc in the Department of Neurosciences at Case Western studying the neurobiology of movement. One of my long-term research goals is to understand how changing neural dynamics shape movement across the lifespan.</p>
-        <div class="links">
-          <a href="https://scholar.google.com/citations?user=U2jzCgYAAAAJ&hl=en/in/yourprofile">Publications (Google Scholar)</a>
-          <a href="https://sauerbreilab.org/">Postdoc in the Sauerbrei Lab</a>
-          <a href="https://case.edu/medicine/neurosciences//">Neuroscience in Cleveland</a>
-          <a href = "erickirk_cv.pdf">CV</a>
-          <a href="mailto:eak152@case.edu">Email</a>
-        </div>
-
-        <div class="photo-gallery">
-            <!-- Now includes 6 images for a 2x3 matrix, assuming they are in an 'images' folder -->
-            <img src="images/IMG_1.jpg" alt="Gallery Photo 1" class="gallery-pic">
-            <img src="images/IMG_2.jpg" alt="Gallery Photo 2" class="gallery-pic">
-            <img src="images/IMG_3.jpg" alt="Gallery Photo 3" class="gallery-pic">
-            <img src="images/IMG_4.jpg" alt="Gallery Photo 4" class="gallery-pic">
-            <img src="images/IMG_5.jpg" alt="Gallery Photo 5" class="gallery-pic">
-            <img src="images/IMG_6.jpg" alt="Gallery Photo 6" class="gallery-pic">
+        <div class="gallery-panel">
+            <div class="photo-gallery">
+                <img src="images/IMG_1.jpg" alt="Gallery Photo 1" class="gallery-pic">
+                <img src="images/IMG_2.jpg" alt="Gallery Photo 2" class="gallery-pic">
+                <img src="images/IMG_3.jpg" alt="Gallery Photo 3" class="gallery-pic">
+                <img src="images/IMG_4.jpg" alt="Gallery Photo 4" class="gallery-pic">
+                <img src="images/IMG_5.jpg" alt="Gallery Photo 5" class="gallery-pic">
+                <img src="images/IMG_6.jpg" alt="Gallery Photo 6" class="gallery-pic">
+            </div>
         </div>
     </div>
 </body>
 </html>
+
