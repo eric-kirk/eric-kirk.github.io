@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eric Kirk</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa; /* Lighter gray background */
+            color: #212529; /* Darker text for better readability */
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align items to the left */
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start; /* Changed from space-between */
+            width: 100%;
+            gap: 40px; /* Adjusted space between links and picture */
+        }
+
+        .profile-pic {
+            width: 180px;
+            height: 180px;
+            border-radius: 9px; /* Slightly rounded corners for the square */
+            object-fit: cover;
+            flex-shrink: 0; /* Prevent image from shrinking if space is tight */
+        }
+
+        h1 {
+            font-size: 2.5em; /* Larger name */
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.1em;
+            margin: 0 0 20px 0;
+            max-width: 100%; /* Adjust max-width */
+        }
+
+        .links {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px; /* Use gap for spacing */
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Simple media query for better mobile view */
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start; /* Align to top on mobile */
+                padding-top: 40px;
+            }
+            .content-wrapper {
+                flex-direction: column-reverse; /* Stack picture above links */
+                align-items: center;
+                gap: 20px;
+            }
+            .info-panel, .links {
+                align-items: center; /* Center content on mobile */
+            }
+            h1, p {
+                text-align: center;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-panel">
+            <h1>Eric Kirk</h1>
+            <p>I'm a Postdoc in the Department of Neurosciences at Case Western studying the neurobiology of movement.</p>
+            <div class="content-wrapper">
+                <div class="links">
+                  <a href="https://scholar.google.com/citations?user=U2jzCgYAAAAJ&hl=en/in/yourprofile">Publications (Google Scholar)</a>
+                  <a href="https://sauerbreilab.org/">Postdoc in the Sauerbrei Lab</a>
+                  <a href="https://case.edu/medicine/neurosciences//">Neuroscience in Cleveland</a>
+                  <a href = "erickirk_cv.pdf">CV</a>
+                  <a href="mailto:eak152@case.edu">Email</a>
+                </div>
+                <img src="images/IMG_profile.jpg" alt="Eric Kirk Profile Picture" class="profile-pic">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
