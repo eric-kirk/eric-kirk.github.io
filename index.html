@@ -69,7 +69,7 @@
         
         @media (min-width: 768px) {
             #canvas-container {
-                height: 450px; /* Increased height slightly to match the wider aspect ratio */
+                height: 450px; /* Matched height to desktop sizing */
             }
         }
     </style>
@@ -77,12 +77,12 @@
 
 <body class="min-h-screen bg-pattern flex flex-col items-center pt-12 pb-8 px-4 md:pt-24 md:px-8">
 
-    <!-- Expanded max width to a custom 1350px to allow both the wide plot AND wider text -->
+    <!-- Expanded max width to a custom 1350px for excellent wide-screen balance -->
     <main class="max-w-[1350px] w-full flex-grow">
         
         <div class="flex flex-col md:flex-row gap-12 lg:gap-16">
             
-            <!-- Adjusted the width of the left column to 2/3 (66.6%) of the layout -->
+            <!-- Left Column: 2/3 of the layout width for Bio and Links -->
             <div class="w-full md:w-2/3 space-y-8 flex flex-col">
                 <header>
                     <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900">
@@ -131,7 +131,7 @@
                 </nav>
             </div>
 
-            <!-- Adjusted the right column to 1/3 (33.3%) of the layout -->
+            <!-- Right Column: 1/3 of the layout width for Profile Picture and 3D Plot -->
             <div class="w-full md:w-1/3 flex flex-col gap-12 lg:gap-16 items-center md:items-end">
                 
                 <!-- Profile Picture -->
@@ -201,7 +201,6 @@
             scene.add(new THREE.Line(zAxisGeo, axesMaterial));
 
             // 2. Flow Field (Background context)
-            // Represented by faint grey dots that subtly move
             const flowParticlesCount = 500;
             const flowGeometry = new THREE.BufferGeometry();
             const flowPositions = new Float32Array(flowParticlesCount * 3);
@@ -209,7 +208,7 @@
             const flowPhases = new Float32Array(flowParticlesCount); // For oscillating movement
 
             for (let i = 0; i < flowParticlesCount; i++) {
-                // Scatter in a sphere roughly within axes
+                // Scatter in a sphere naturally centered at 0,0,0
                 const r = 14 * Math.cbrt(Math.random());
                 const theta = Math.random() * 2 * Math.PI;
                 const phi = Math.acos(2 * Math.random() - 1);
@@ -258,12 +257,12 @@
             let currentX = 0.1, currentY = 0, currentZ = 0;
             const history = []; // Keep track of past points
 
-            // Interaction State
+            // Interaction State (Now an ATTRACTOR instead of repulsor)
             const mouse = new THREE.Vector2();
             const raycaster = new THREE.Raycaster();
             let isHovering = false;
-            let targetRepulsion = 0;
-            let currentRepulsion = 0;
+            let targetAttraction = 0;
+            let currentAttraction = 0;
             let pointerIntersectPoint = new THREE.Vector3();
             
             // Create a plane to raycast against for mouse interaction
@@ -279,12 +278,12 @@
                 mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
                 mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
                 isHovering = true;
-                targetRepulsion = 1.0;
+                targetAttraction = 1.0; // Trigger attractor
             });
 
             container.addEventListener('mouseleave', () => {
                 isHovering = false;
-                targetRepulsion = 0.0;
+                targetAttraction = 0.0;
             });
 
             // Handle resize
@@ -298,13 +297,15 @@
 
             // Animation Loop
             let time = 0;
+            // Scaling factor to map mathematical state space to visual space
+            const visualScale = 0.4;
             
             function animate() {
                 requestAnimationFrame(animate);
                 time += 0.01;
 
-                // 1. Update Repulsion Force based on mouse
-                currentRepulsion += (targetRepulsion - currentRepulsion) * 0.1; // Smooth transition
+                // 1. Update Attraction Force based on mouse
+                currentAttraction += (targetAttraction - currentAttraction) * 0.1; // Smooth transition
 
                 if (isHovering) {
                     raycaster.setFromCamera(mouse, camera);
@@ -324,13 +325,13 @@
                 for (let i = 0; i < flowParticlesCount; i++) {
                     const idx = i * 3;
                     
-                    // Base gentle oscillation
+                    // Base gentle oscillation around their natural state
                     let px = flowInitialPositions[idx] + Math.sin(time * 2 + flowPhases[i]) * 0.2;
                     let py = flowInitialPositions[idx+1] + Math.cos(time * 1.5 + flowPhases[i]) * 0.2;
                     let pz = flowInitialPositions[idx+2] + Math.sin(time * 1.8 + flowPhases[i]) * 0.2;
 
-                    // Apply repulsion if active
-                    if (currentRepulsion > 0.01) {
+                    // Apply strong ATTRACTOR pull if hovering
+                    if (currentAttraction > 0.01) {
                         // We need the world position of the particle to compare with pointer
                         const particleWorldPos = new THREE.Vector3(px, py, pz);
                         // Convert to world space considering scene rotation
@@ -338,18 +339,19 @@
                         
                         const dist = particleWorldPos.distanceTo(pointerIntersectPoint);
                         
-                        // If close to pointer, push away
-                        const influenceRadius = 10;
+                        // If within influence, strongly PULL towards pointer
+                        const influenceRadius = 25;
                         if (dist < influenceRadius) {
-                            const force = (1 - (dist / influenceRadius)) * currentRepulsion * 3;
-                            const dir = new THREE.Vector3().subVectors(particleWorldPos, pointerIntersectPoint).normalize();
+                            // Quadratic falloff so it snaps tightly into the center
+                            const pullForce = Math.pow(1 - (dist / influenceRadius), 2) * currentAttraction * dist * 0.8;
+                            const dir = new THREE.Vector3().subVectors(pointerIntersectPoint, particleWorldPos).normalize();
                             
                             // Convert direction back to local space before applying
                             dir.applyAxisAngle(new THREE.Vector3(0,1,0), -scene.rotation.y);
                             
-                            px += dir.x * force;
-                            py += dir.y * force;
-                            pz += dir.z * force;
+                            px += dir.x * pullForce;
+                            py += dir.y * pullForce;
+                            pz += dir.z * pullForce;
                         }
                     }
 
@@ -364,46 +366,40 @@
                 const rho = 28;
                 const beta = 8/3;
                 
-                // Base dynamical equations
+                // Base dynamical equations (Lorenz Attractor)
                 let dx = sigma * (currentY - currentX) * dt;
                 let dy = (currentX * (rho - currentZ) - currentY) * dt;
                 let dz = (currentX * currentY - beta * currentZ) * dt;
 
-                // Scale and shift coordinates to fit our axes nicely
-                let nextX = currentX + dx;
-                let nextY = currentY + dy;
-                let nextZ = currentZ + dz;
+                // Apply Strong Fixed Point Attraction to the mathematical state
+                if (currentAttraction > 0.01) {
+                    // Map pointer from visual coordinate space BACK to mathematical state space
+                    const localPointer = pointerIntersectPoint.clone();
+                    localPointer.applyAxisAngle(new THREE.Vector3(0,1,0), -scene.rotation.y);
+                    
+                    // Inverse of the visual centering logic below
+                    const targetStateX = localPointer.x / visualScale;
+                    const targetStateY = localPointer.y / visualScale;
+                    const targetStateZ = (localPointer.z / visualScale) + 28; 
 
-                // Apply repulsion to the leading edge of the trajectory
-                if (currentRepulsion > 0.01) {
-                     // Translate current simulation state roughly to visual coordinates to calc repulsion
-                     const visPos = new THREE.Vector3(nextX * 0.5, nextY * 0.5 - 12, nextZ * 0.5);
-                     visPos.applyAxisAngle(new THREE.Vector3(0,1,0), scene.rotation.y);
-                     
-                     const dist = visPos.distanceTo(pointerIntersectPoint);
-                     const influenceRadius = 15;
-                     
-                     if (dist < influenceRadius) {
-                         // Disrupt the system based on proximity to cursor
-                         const force = (1 - (dist / influenceRadius)) * currentRepulsion * 50;
-                         // Add noise/repulsion directly to the state derivatives
-                         const dir = new THREE.Vector3().subVectors(visPos, pointerIntersectPoint).normalize();
-                         dir.applyAxisAngle(new THREE.Vector3(0,1,0), -scene.rotation.y);
-                         
-                         nextX += dir.x * force * dt;
-                         nextY += dir.y * force * dt;
-                         nextZ += dir.z * force * dt;
-                     }
+                    // Force the differential equations to collapse onto the target state
+                    const pullStrength = 50 * currentAttraction; // 50 is stable for dt=0.015 (max is ~66)
+                    
+                    dx += (targetStateX - currentX) * pullStrength * dt;
+                    dy += (targetStateY - currentY) * pullStrength * dt;
+                    dz += (targetStateZ - currentZ) * pullStrength * dt;
                 }
 
-                currentX = nextX;
-                currentY = nextY;
-                currentZ = nextZ;
+                // Update state
+                currentX += dx;
+                currentY += dy;
+                currentZ += dz;
 
-                // Transform to visual space (scale down and center)
-                const visualX = currentX * 0.5;
-                const visualY = currentY * 0.5 - 12; // shift down
-                const visualZ = currentZ * 0.5;
+                // Transform to visual space (scale down and CENTER around 0,0,0)
+                // The Lorenz Z-axis typically ranges from 0 to 50, so we subtract 28 to center it over the origin
+                const visualX = currentX * visualScale;
+                const visualY = currentY * visualScale;
+                const visualZ = (currentZ - 28) * visualScale;
 
                 // Add to history
                 history.push(new THREE.Vector3(visualX, visualY, visualZ));
@@ -416,7 +412,7 @@
                 // Update geometry positions
                 const tPositions = trajGeometry.attributes.position.array;
                 
-                // Fill the buffer backwards so the "head" of the snake is at the end of the array,
+                // Fill the buffer backwards so the "head" of the snake is at the end of the array
                 for (let i = 0; i < trajPointsCount; i++) {
                     const hIndex = i - (trajPointsCount - history.length);
                     
