@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,93 +8,127 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #fcfcfd;
+            background-color: #ffffff; /* Changed to pure white to blend with content */
+            color: #1f2937; /* text-gray-800 */
         }
 
-        .card-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        .link-hover {
+            transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
         }
-
         .link-hover:hover {
             transform: translateX(4px);
         }
         
-        /* Smooth transitions */
-        .transition-all {
-            transition: all 0.2s ease-in-out;
+        /* Interactive subtle background pattern */
+        .bg-pattern {
+            background-image: radial-gradient(#f3f4f6 1px, transparent 1px);
+            background-size: 24px 24px;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
 
-    <main class="max-w-2xl w-full bg-white rounded-2xl p-8 md:p-12 card-shadow border border-gray-100">
+<body class="min-h-screen bg-pattern flex flex-col items-center pt-12 pb-8 px-4 md:pt-24 md:px-8">
+
+    <!-- Removed the card styling, background color, and shadow from the main container -->
+    <main class="max-w-3xl w-full flex-grow">
         
-        <div class="flex flex-col-reverse md:flex-row md:items-start gap-8 md:gap-12">
+        <div class="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-10 md:gap-16">
             
             <!-- Text Content -->
-            <div class="flex-1 space-y-6">
+            <div class="flex-1 space-y-8 mt-6 md:mt-0">
                 <header>
-                    <!-- Reduced font size from 4xl/5xl to 2xl/3xl -->
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
                         Eric Kirk
                     </h1>
-                    <p class="mt-4 text-lg text-gray-600 leading-relaxed">
-                        I'm a Postdoc in the Department of Neurosciences at <span class="text-gray-900 font-medium">Case Western Reserve University</span>, studying the neurobiology of movement.
+                    <p class="mt-5 text-lg md:text-xl text-gray-600 leading-relaxed font-light">
+                        I'm a Postdoc in the Department of Neurosciences at <span class="text-gray-900 font-medium border-b border-gray-300 pb-0.5">Case Western Reserve University</span>, studying the neurobiology of movement.
                     </p>
                 </header>
 
-                <!-- Navigation Links -->
-                <nav class="flex flex-col space-y-3">
-                    <a href="https://scholar.google.com/citations?hl=en&user=U2jzCgYAAAAJ&view_op=list_works&sortby=pubdate" class="group flex items-center text-blue-600 hover:text-blue-800 font-medium transition-all link-hover">
-                        <i data-lucide="graduation-cap" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <nav class="flex flex-col space-y-4 pt-4">
+                    <a href="https://scholar.google.com/citations?hl=en&user=U2jzCgYAAAAJ&view_op=list_works&sortby=pubdate" class="group flex items-center text-brand-600 hover:text-brand-700 font-medium text-lg link-hover">
+                        <div class="p-2 bg-brand-50 rounded-lg mr-4 group-hover:bg-brand-100 transition-colors">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 text-brand-600"></i>
+                        </div>
                         Publications (Google Scholar)
                     </a>
                     
-                    <a href="https://sauerbreilab.org/" class="group flex items-center text-blue-600 hover:text-blue-800 font-medium transition-all link-hover">
-                        <i data-lucide="microscope" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                    <a href="https://sauerbreilab.org/" class="group flex items-center text-brand-600 hover:text-brand-700 font-medium text-lg link-hover">
+                        <div class="p-2 bg-brand-50 rounded-lg mr-4 group-hover:bg-brand-100 transition-colors">
+                            <i data-lucide="microscope" class="w-5 h-5 text-brand-600"></i>
+                        </div>
                         Sauerbrei Lab
                     </a>
 
-                    <a href="https://case.edu/medicine/neurosciences/" class="group flex items-center text-blue-600 hover:text-blue-800 font-medium transition-all link-hover">
-                        <i data-lucide="map-pin" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                    <a href="https://case.edu/medicine/neurosciences/" class="group flex items-center text-brand-600 hover:text-brand-700 font-medium text-lg link-hover">
+                        <div class="p-2 bg-brand-50 rounded-lg mr-4 group-hover:bg-brand-100 transition-colors">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-brand-600"></i>
+                        </div>
                         Neuroscience in Cleveland
                     </a>
 
-                    <a href="erickirk_cv.pdf" class="group flex items-center text-blue-600 hover:text-blue-800 font-medium transition-all link-hover">
-                        <i data-lucide="file-text" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                    <a href="erickirk_cv.pdf" class="group flex items-center text-brand-600 hover:text-brand-700 font-medium text-lg link-hover">
+                        <div class="p-2 bg-brand-50 rounded-lg mr-4 group-hover:bg-brand-100 transition-colors">
+                            <i data-lucide="file-text" class="w-5 h-5 text-brand-600"></i>
+                        </div>
                         Curriculum Vitae
                     </a>
 
-                    <a href="mailto:eak152@case.edu" class="group flex items-center text-blue-600 hover:text-blue-800 font-medium transition-all link-hover">
-                        <i data-lucide="mail" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                    <a href="mailto:eak152@case.edu" class="group flex items-center text-brand-600 hover:text-brand-700 font-medium text-lg link-hover">
+                        <div class="p-2 bg-brand-50 rounded-lg mr-4 group-hover:bg-brand-100 transition-colors">
+                            <i data-lucide="mail" class="w-5 h-5 text-brand-600"></i>
+                        </div>
                         eak152@case.edu
                     </a>
                 </nav>
             </div>
 
-            <!-- Profile Picture -->
-            <div class="flex justify-center md:block">
-                <div class="relative">
-                    <img 
-                        src="images/IMG_profile.jpg" 
-                        alt="Eric Kirk Profile Picture" 
-                        class="w-40 h-40 md:w-48 md:h-48 rounded-2xl object-cover ring-4 ring-gray-50 card-shadow"
-                        onerror="this.src='https://via.placeholder.com/200?text=EK'"
-                    >
-                    <!-- Optional accent decoration -->
-                    <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-blue-50 rounded-full -z-10"></div>
+            <div class="flex justify-start md:justify-end flex-shrink-0">
+                <div class="relative group cursor-pointer">
+                    <!-- Image container with subtle rotation on hover for interactivity -->
+                    <div class="transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:-rotate-2">
+                        <img 
+                            src="images/IMG_profile.jpg" 
+                            alt="Eric Kirk Profile Picture" 
+                            class="w-48 h-48 md:w-56 md:h-56 rounded-full object-cover shadow-lg ring-4 ring-white"
+                            onerror="this.src='https://via.placeholder.com/224?text=EK'"
+                        >
+                    </div>
+                    <!-- Decorative background element -->
+                    <div class="absolute inset-0 w-full h-full bg-brand-100 rounded-full -z-10 blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-300"></div>
                 </div>
             </div>
 
         </div>
 
-        <footer class="mt-12 pt-8 border-t border-gray-100">
-            <p class="text-xs text-gray-400 text-center md:text-left">
+        <footer class="mt-20 pt-8 border-t border-gray-100">
+            <p class="text-sm text-gray-400">
                 &copy; <script>document.write(new Date().getFullYear())</script> Eric Kirk
             </p>
         </footer>
