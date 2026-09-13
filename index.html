@@ -70,9 +70,10 @@
             #canvas-container {
                 /* Make it 50% wider than its 1/3 column container */
                 width: 150%; 
-                /* Anchors to the right edge to line up with the profile picture */
-                margin-right: 0; 
-                margin-left: auto;
+                /* Pulling the left margin by -50% forces the 150% width element to overflow entirely to the left. 
+                   This keeps the right edge perfectly flush with the parent container (and the profile pic). */
+                margin-left: -50%; 
+                margin-right: 0;
             }
         }
     </style>
@@ -134,7 +135,7 @@
             </div>
 
             <!-- Right Column: Exactly 1/3 of the layout width -->
-            <div class="w-full md:w-1/3 flex flex-col gap-12 lg:gap-16 items-center md:items-end">
+            <div class="w-full md:w-1/3 flex flex-col gap-12 lg:gap-16 items-center md:items-end relative">
                 
                 <!-- Profile Picture -->
                 <div class="relative group cursor-pointer w-48 md:w-56 flex-shrink-0 self-center md:self-end">
@@ -150,7 +151,7 @@
                 </div>
 
                 <!-- 3D Interactive Graphic Container -->
-                <div id="canvas-container" class="shadow-sm"></div>
+                <div id="canvas-container" class="shadow-sm z-10"></div>
                 
             </div>
 
