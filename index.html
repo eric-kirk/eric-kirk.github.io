@@ -72,8 +72,9 @@
             #canvas-container {
                 /* Make it 50% wider than its 1/3 column container */
                 width: 150%; 
-                /* Shift the extra width equally into the margins so it doesn't overlap text */
-                margin-right: -25%;
+                /* By keeping margin-right at 0, the flex-end alignment of the parent 
+                   forces the canvas right-edge to align with the picture, pushing the extra 50% width leftwards */
+                margin-right: 0; 
             }
         }
     </style>
@@ -152,7 +153,7 @@
                 </div>
 
                 <!-- 3D Interactive Graphic Container -->
-                <!-- The CSS makes this width 150% and perfectly aligned -->
+                <!-- The CSS makes this width 150% and aligns the right edge with the picture above it -->
                 <div id="canvas-container" class="shadow-sm"></div>
                 
             </div>
@@ -257,7 +258,7 @@
             scene.add(trajectoryLine);
 
             // Physics variables
-            let dt = 0.015;
+            let baseDt = 0.015;
             let currentX = 0.1, currentY = 0, currentZ = 0;
             const history = []; 
             const visualScale = 0.4; // Map math scale down to visual scale
@@ -347,8 +348,8 @@
                             let tangentialForce = new THREE.Vector3().crossVectors(toParticle, zAxis).normalize().multiplyScalar(15.0 * forceMag);
                             if (isNaN(tangentialForce.x)) tangentialForce.set(0,0,0);
                             
-                            // 3. High-frequency ripple along the Z-axis
-                            const zRippleForce = new THREE.Vector3(0, 0, Math.sin(time * 40.0 + dist) * 12.0 * forceMag);
+                            // 3. Very small amplitude, high-frequency ripple along the Z-axis for particles
+                            const zRippleForce = new THREE.Vector3(0, 0, Math.sin(time * 90.0 + dist) * 1.5 * forceMag);
                             
                             // Combine physical forces
                             const totalForce = new THREE.Vector3().addVectors(radialForce, tangentialForce).add(zRippleForce);
@@ -372,10 +373,14 @@
                 const rho = 28;
                 const beta = 8/3;
                 
-                // Native dynamics
-                let dx = sigma * (currentY - currentX) * dt;
-                let dy = (currentX * (rho - currentZ) - currentY) * dt;
-                let dz = (currentX * currentY - beta * currentZ) * dt;
+                // Introduce variable velocity: speed speeds up and slows down dynamically based on time
+                const velocityMultiplier = 1.2 + 0.9 * Math.sin(time * 1.5); // Oscillates between 0.3x (slow) and 2.1x (fast)
+                const currentDt = baseDt * velocityMultiplier;
+                
+                // Native dynamics utilizing variable velocity
+                let dx = sigma * (currentY - currentX) * currentDt;
+                let dy = (currentX * (rho - currentZ) - currentY) * currentDt;
+                let dz = (currentX * currentY - beta * currentZ) * currentDt;
 
                 // CIRCULAR ATTRACTOR LOGIC
                 if (currentAttraction > 0.01) {
@@ -391,9 +396,9 @@
                     const orbitRadius = 18.0;
                     const orbitSpeed = 12.0;
                     
-                    // 2. Ripple high frequency variability along the Z axis
-                    const rippleFreq = 50.0;
-                    const rippleAmp = 12.0;
+                    // 2. High frequency, VERY small amplitude variability along the Z axis
+                    const rippleFreq = 90.0;
+                    const rippleAmp = 1.0;
                     
                     // Generate the dynamically moving circular target point
                     const targetStateX = baseTargetX + Math.cos(time * orbitSpeed) * orbitRadius;
@@ -403,9 +408,10 @@
                     // Apply overwhelming pull to collapse trajectory into the new circular limit-cycle
                     const pullStrength = 60 * currentAttraction; 
                     
-                    dx += (targetStateX - currentX) * pullStrength * dt;
-                    dy += (targetStateY - currentY) * pullStrength * dt;
-                    dz += (targetStateZ - currentZ) * pullStrength * dt;
+                    // The pull also respects the variable velocity for smooth integration
+                    dx += (targetStateX - currentX) * pullStrength * currentDt;
+                    dy += (targetStateY - currentY) * pullStrength * currentDt;
+                    dz += (targetStateZ - currentZ) * pullStrength * currentDt;
                 }
 
                 currentX += dx;
