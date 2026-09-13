@@ -38,7 +38,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #ffffff;
             color: #1f2937;
-            overflow-x: hidden; /* Prevent horizontal scroll from canvas */
+            overflow-x: hidden; /* Prevent horizontal scroll from expanded canvas */
         }
 
         .link-hover {
@@ -57,7 +57,8 @@
         /* Container for the 3D canvas */
         #canvas-container {
             width: 100%;
-            height: 300px; /* Default height */
+            /* Enforce exactly 2x width to height ratio */
+            aspect-ratio: 2 / 1; 
             position: relative;
             border-radius: 1rem;
             overflow: hidden;
@@ -69,7 +70,10 @@
         
         @media (min-width: 768px) {
             #canvas-container {
-                height: 450px; /* Matched height to desktop sizing */
+                /* Make it 50% wider than its 1/3 column container */
+                width: 150%; 
+                /* Shift the extra width equally into the margins so it doesn't overlap text */
+                margin-right: -25%;
             }
         }
     </style>
@@ -77,12 +81,12 @@
 
 <body class="min-h-screen bg-pattern flex flex-col items-center pt-12 pb-8 px-4 md:pt-24 md:px-8">
 
-    <!-- Expanded max width to a custom 1350px for excellent wide-screen balance -->
+    <!-- Expanded max width for a beautifully balanced wide-screen layout -->
     <main class="max-w-[1350px] w-full flex-grow">
         
         <div class="flex flex-col md:flex-row gap-12 lg:gap-16">
             
-            <!-- Left Column: 2/3 of the layout width for Bio and Links -->
+            <!-- Left Column: Exactly 2/3 of the layout width for Bio and Links -->
             <div class="w-full md:w-2/3 space-y-8 flex flex-col">
                 <header>
                     <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900">
@@ -131,7 +135,7 @@
                 </nav>
             </div>
 
-            <!-- Right Column: 1/3 of the layout width for Profile Picture and 3D Plot -->
+            <!-- Right Column: Exactly 1/3 of the layout width for Profile Picture and 3D Plot -->
             <div class="w-full md:w-1/3 flex flex-col gap-12 lg:gap-16 items-center md:items-end">
                 
                 <!-- Profile Picture -->
@@ -148,6 +152,7 @@
                 </div>
 
                 <!-- 3D Interactive Graphic Container -->
+                <!-- The CSS makes this width 150% and perfectly aligned -->
                 <div id="canvas-container" class="shadow-sm"></div>
                 
             </div>
@@ -176,9 +181,9 @@
 
             // Setup Scene, Camera, Renderer
             const scene = new THREE.Scene();
-            // Light grey background for the container
-            scene.background = new THREE.Color(0xfcfcfd);
+            scene.background = new THREE.Color(0xfcfcfd); // Light grey background
 
+            // Adjust aspect ratio based on container's computed size
             const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(20, 15, 30);
             camera.lookAt(0, 0, 0);
@@ -188,8 +193,8 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // 1. Draw thin black axes (Neural State Space)
-            const axesMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1, transparent: true, opacity: 0.5 });
+            // 1. Draw thin black axes perfectly centered
+            const axesMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1, transparent: true, opacity: 0.3 });
             const axisLength = 15;
             
             const xAxisGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-axisLength, 0, 0), new THREE.Vector3(axisLength, 0, 0)]);
@@ -201,15 +206,14 @@
             scene.add(new THREE.Line(zAxisGeo, axesMaterial));
 
             // 2. Flow Field (Background context)
-            const flowParticlesCount = 500;
+            const flowParticlesCount = 600;
             const flowGeometry = new THREE.BufferGeometry();
             const flowPositions = new Float32Array(flowParticlesCount * 3);
             const flowInitialPositions = new Float32Array(flowParticlesCount * 3);
-            const flowPhases = new Float32Array(flowParticlesCount); // For oscillating movement
+            const flowPhases = new Float32Array(flowParticlesCount);
 
             for (let i = 0; i < flowParticlesCount; i++) {
-                // Scatter in a sphere naturally centered at 0,0,0
-                const r = 14 * Math.cbrt(Math.random());
+                const r = 16 * Math.cbrt(Math.random());
                 const theta = Math.random() * 2 * Math.PI;
                 const phi = Math.acos(2 * Math.random() - 1);
 
@@ -230,10 +234,10 @@
 
             flowGeometry.setAttribute('position', new THREE.BufferAttribute(flowPositions, 3));
             const flowMaterial = new THREE.PointsMaterial({ 
-                color: 0xd1d5db, // Very light grey (Tailwind gray-300)
+                color: 0xd1d5db, 
                 size: 0.15,
                 transparent: true,
-                opacity: 0.6
+                opacity: 0.7
             });
             const flowSystem = new THREE.Points(flowGeometry, flowMaterial);
             scene.add(flowSystem);
@@ -244,20 +248,20 @@
             const trajPositions = new Float32Array(trajPointsCount * 3);
             trajGeometry.setAttribute('position', new THREE.BufferAttribute(trajPositions, 3));
             
-            // Brilliant Green - using a vivid, tech-y green
+            // Brilliant Green line for the active neural trajectory
             const trajMaterial = new THREE.LineBasicMaterial({ 
-                color: 0x10b981, // Tailwind emerald-500
-                linewidth: 2 // Note: WebGL linewidth often defaults to 1 on many platforms
+                color: 0x10b981, 
+                linewidth: 2
             });
             const trajectoryLine = new THREE.Line(trajGeometry, trajMaterial);
             scene.add(trajectoryLine);
 
-            // Attractor parameters
+            // Physics variables
             let dt = 0.015;
             let currentX = 0.1, currentY = 0, currentZ = 0;
-            const history = []; // Keep track of past points
+            const history = []; 
+            const visualScale = 0.4; // Map math scale down to visual scale
 
-            // Interaction State (Now an ATTRACTOR instead of repulsor)
             const mouse = new THREE.Vector2();
             const raycaster = new THREE.Raycaster();
             let isHovering = false;
@@ -265,11 +269,9 @@
             let currentAttraction = 0;
             let pointerIntersectPoint = new THREE.Vector3();
             
-            // Create a plane to raycast against for mouse interaction
             const planeGeo = new THREE.PlaneGeometry(100, 100);
             const planeMat = new THREE.MeshBasicMaterial({ visible: false });
             const interactionPlane = new THREE.Mesh(planeGeo, planeMat);
-            // Face the camera roughly
             interactionPlane.lookAt(camera.position);
             scene.add(interactionPlane);
 
@@ -278,7 +280,7 @@
                 mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
                 mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
                 isHovering = true;
-                targetAttraction = 1.0; // Trigger attractor
+                targetAttraction = 1.0; 
             });
 
             container.addEventListener('mouseleave', () => {
@@ -286,7 +288,7 @@
                 targetAttraction = 0.0;
             });
 
-            // Handle resize
+            // Resizing intelligently adapts to the 2:1 aspect ratio constraint
             window.addEventListener('resize', () => {
                 const width = container.clientWidth;
                 const height = container.clientHeight;
@@ -295,17 +297,13 @@
                 camera.updateProjectionMatrix();
             });
 
-            // Animation Loop
             let time = 0;
-            // Scaling factor to map mathematical state space to visual space
-            const visualScale = 0.4;
             
             function animate() {
                 requestAnimationFrame(animate);
                 time += 0.01;
 
-                // 1. Update Attraction Force based on mouse
-                currentAttraction += (targetAttraction - currentAttraction) * 0.1; // Smooth transition
+                currentAttraction += (targetAttraction - currentAttraction) * 0.1;
 
                 if (isHovering) {
                     raycaster.setFromCamera(mouse, camera);
@@ -315,43 +313,52 @@
                     }
                 }
 
-                // 2. Rotate the entire scene slowly for depth
+                // Smooth scene rotation
                 scene.rotation.y = time * 0.2;
-                // Counter-rotate the interaction plane so it stays facing camera
                 interactionPlane.rotation.y = -scene.rotation.y;
 
-                // 3. Update Flow Field (Background)
+                // Update Flow Field (Grey Particles Swirling)
                 const positions = flowGeometry.attributes.position.array;
                 for (let i = 0; i < flowParticlesCount; i++) {
                     const idx = i * 3;
                     
-                    // Base gentle oscillation around their natural state
                     let px = flowInitialPositions[idx] + Math.sin(time * 2 + flowPhases[i]) * 0.2;
                     let py = flowInitialPositions[idx+1] + Math.cos(time * 1.5 + flowPhases[i]) * 0.2;
                     let pz = flowInitialPositions[idx+2] + Math.sin(time * 1.8 + flowPhases[i]) * 0.2;
 
-                    // Apply strong ATTRACTOR pull if hovering
+                    // When hovered, particles SWIRL and RIPPLE into a circular orbit around the pointer
                     if (currentAttraction > 0.01) {
-                        // We need the world position of the particle to compare with pointer
                         const particleWorldPos = new THREE.Vector3(px, py, pz);
-                        // Convert to world space considering scene rotation
                         particleWorldPos.applyAxisAngle(new THREE.Vector3(0,1,0), scene.rotation.y);
                         
-                        const dist = particleWorldPos.distanceTo(pointerIntersectPoint);
+                        const toParticle = new THREE.Vector3().subVectors(particleWorldPos, pointerIntersectPoint);
+                        const dist = toParticle.length();
                         
-                        // If within influence, strongly PULL towards pointer
-                        const influenceRadius = 25;
+                        const influenceRadius = 35;
                         if (dist < influenceRadius) {
-                            // Quadratic falloff so it snaps tightly into the center
-                            const pullForce = Math.pow(1 - (dist / influenceRadius), 2) * currentAttraction * dist * 0.8;
-                            const dir = new THREE.Vector3().subVectors(pointerIntersectPoint, particleWorldPos).normalize();
+                            // Quadratic falloff based on distance
+                            const forceMag = Math.pow(1 - (dist / influenceRadius), 2) * currentAttraction;
                             
-                            // Convert direction back to local space before applying
-                            dir.applyAxisAngle(new THREE.Vector3(0,1,0), -scene.rotation.y);
+                            // 1. Pull inward
+                            const radialForce = toParticle.clone().normalize().multiplyScalar(-10.0 * forceMag);
                             
-                            px += dir.x * pullForce;
-                            py += dir.y * pullForce;
-                            pz += dir.z * pullForce;
+                            // 2. Swirl tangentially around the Z-axis
+                            const zAxis = new THREE.Vector3(0, 0, 1);
+                            let tangentialForce = new THREE.Vector3().crossVectors(toParticle, zAxis).normalize().multiplyScalar(15.0 * forceMag);
+                            if (isNaN(tangentialForce.x)) tangentialForce.set(0,0,0);
+                            
+                            // 3. High-frequency ripple along the Z-axis
+                            const zRippleForce = new THREE.Vector3(0, 0, Math.sin(time * 40.0 + dist) * 12.0 * forceMag);
+                            
+                            // Combine physical forces
+                            const totalForce = new THREE.Vector3().addVectors(radialForce, tangentialForce).add(zRippleForce);
+                            
+                            // Transform force back into the local rotated space
+                            totalForce.applyAxisAngle(new THREE.Vector3(0,1,0), -scene.rotation.y);
+                            
+                            px += totalForce.x * 0.15;
+                            py += totalForce.y * 0.15;
+                            pz += totalForce.z * 0.15;
                         }
                     }
 
@@ -361,68 +368,67 @@
                 }
                 flowGeometry.attributes.position.needsUpdate = true;
 
-                // 4. Update Dynamical Trajectory
                 const sigma = 10;
                 const rho = 28;
                 const beta = 8/3;
                 
-                // Base dynamical equations (Lorenz Attractor)
+                // Native dynamics
                 let dx = sigma * (currentY - currentX) * dt;
                 let dy = (currentX * (rho - currentZ) - currentY) * dt;
                 let dz = (currentX * currentY - beta * currentZ) * dt;
 
-                // Apply Strong Fixed Point Attraction to the mathematical state
+                // CIRCULAR ATTRACTOR LOGIC
                 if (currentAttraction > 0.01) {
-                    // Map pointer from visual coordinate space BACK to mathematical state space
                     const localPointer = pointerIntersectPoint.clone();
                     localPointer.applyAxisAngle(new THREE.Vector3(0,1,0), -scene.rotation.y);
                     
-                    // Inverse of the visual centering logic below
-                    const targetStateX = localPointer.x / visualScale;
-                    const targetStateY = localPointer.y / visualScale;
-                    const targetStateZ = (localPointer.z / visualScale) + 28; 
+                    // Map visual target back to the mathematical state space, maintaining perfect origin centering
+                    const baseTargetX = localPointer.x / visualScale;
+                    const baseTargetY = localPointer.y / visualScale;
+                    const baseTargetZ = (localPointer.z / visualScale) + 28; 
 
-                    // Force the differential equations to collapse onto the target state
-                    const pullStrength = 50 * currentAttraction; // 50 is stable for dt=0.015 (max is ~66)
+                    // 1. Rotate around X and Y axes
+                    const orbitRadius = 18.0;
+                    const orbitSpeed = 12.0;
+                    
+                    // 2. Ripple high frequency variability along the Z axis
+                    const rippleFreq = 50.0;
+                    const rippleAmp = 12.0;
+                    
+                    // Generate the dynamically moving circular target point
+                    const targetStateX = baseTargetX + Math.cos(time * orbitSpeed) * orbitRadius;
+                    const targetStateY = baseTargetY + Math.sin(time * orbitSpeed) * orbitRadius;
+                    const targetStateZ = baseTargetZ + Math.sin(time * rippleFreq) * rippleAmp;
+
+                    // Apply overwhelming pull to collapse trajectory into the new circular limit-cycle
+                    const pullStrength = 60 * currentAttraction; 
                     
                     dx += (targetStateX - currentX) * pullStrength * dt;
                     dy += (targetStateY - currentY) * pullStrength * dt;
                     dz += (targetStateZ - currentZ) * pullStrength * dt;
                 }
 
-                // Update state
                 currentX += dx;
                 currentY += dy;
                 currentZ += dz;
 
-                // Transform to visual space (scale down and CENTER around 0,0,0)
-                // The Lorenz Z-axis typically ranges from 0 to 50, so we subtract 28 to center it over the origin
+                // Centered rendering mapping: Subtract 28 from Lorenz Z to center perfectly around (0,0,0)
                 const visualX = currentX * visualScale;
                 const visualY = currentY * visualScale;
                 const visualZ = (currentZ - 28) * visualScale;
 
-                // Add to history
                 history.push(new THREE.Vector3(visualX, visualY, visualZ));
-                
-                // Keep history length fixed
-                if (history.length > trajPointsCount) {
-                    history.shift(); // Remove oldest point
-                }
+                if (history.length > trajPointsCount) history.shift();
 
-                // Update geometry positions
                 const tPositions = trajGeometry.attributes.position.array;
-                
-                // Fill the buffer backwards so the "head" of the snake is at the end of the array
                 for (let i = 0; i < trajPointsCount; i++) {
                     const hIndex = i - (trajPointsCount - history.length);
-                    
                     if (hIndex >= 0 && hIndex < history.length) {
                         const pt = history[hIndex];
                         tPositions[i*3] = pt.x;
                         tPositions[i*3+1] = pt.y;
                         tPositions[i*3+2] = pt.z;
                     } else {
-                        // Not enough history, duplicate the first point
                         const pt = history.length > 0 ? history[0] : new THREE.Vector3(0,0,0);
                         tPositions[i*3] = pt.x;
                         tPositions[i*3+1] = pt.y;
@@ -431,11 +437,9 @@
                 }
                 
                 trajGeometry.attributes.position.needsUpdate = true;
-
                 renderer.render(scene, camera);
             }
 
-            // Start loop
             animate();
         }
     </script>
