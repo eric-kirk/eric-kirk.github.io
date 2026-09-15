@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eric Kirk | Postdoc in Neuroscience</title>
+    
     <!-- Tailwind CSS for modern utility styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -85,7 +86,6 @@
 </head>
 
 <body class="min-h-screen bg-pattern flex flex-col items-center pt-12 pb-8 px-4 md:pt-24 md:px-8">
-
     <main class="max-w-[1350px] w-full flex-grow">
         
         <div class="flex flex-col md:flex-row gap-12 lg:gap-16">
@@ -138,7 +138,6 @@
                     </a>
                 </nav>
 
-                <!-- Research Grid -->
                 <div class="mt-64 lg:mt-[28rem]">
                     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Research</h3>
                     <!-- Using aspect-[4/3] utility from Tailwind to force the 4:3 ratio -->
@@ -220,6 +219,45 @@
             scene.add(new THREE.Line(xAxisGeo, axesMaterial));
             scene.add(new THREE.Line(yAxisGeo, axesMaterial));
             scene.add(new THREE.Line(zAxisGeo, axesMaterial));
+
+            // Helper function to create text labels using a Canvas Texture
+            function createAxisLabel(text) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 128;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.font = '600 36px Inter, sans-serif'; 
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#6b7280'; // gray-500 to match subtlety
+                ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.minFilter = THREE.LinearFilter;
+                const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                const sprite = new THREE.Sprite(material);
+                
+                // Scale width and height relative to canvas aspect ratio
+                sprite.scale.set(9, 2.25, 1); 
+                return sprite;
+            }
+
+            // X Axis Label
+            const xLabel = createAxisLabel('Preparation');
+            xLabel.position.set(axisLength + 2.5, 0, 0);
+            scene.add(xLabel);
+
+            // Y Axis Label
+            const yLabel = createAxisLabel('Effort');
+            // Move label down so it doesn't get clipped by the top edge of the canvas
+            yLabel.position.set(0, axisLength - 1.5, 0); 
+            scene.add(yLabel);
+
+            // Z Axis Label
+            const zLabel = createAxisLabel('Muscle-like');
+            zLabel.position.set(0, 0, axisLength + 2.5);
+            scene.add(zLabel);
 
             // Flow Field (Grey particles)
             const flowParticlesCount = 500;
@@ -393,6 +431,8 @@
                 }
 
                 // Slowly rotate scene for 3D effect
+                // Because the labels were added to the scene, they rotate physically with the axes
+                // while their sprite material ensures they always face the camera text-forward
                 scene.rotation.y = time * 0.15;
                 interactionPlane.rotation.y = -scene.rotation.y;
 
@@ -429,7 +469,7 @@
                 }
                 trajGeometry.attributes.position.needsUpdate = true;
 
-                // 2. Update Flow Field Particles (They evaluate the exact same dynamical systems!)
+                // 2. Update Flow Field Particles
                 const pPositions = flowGeometry.attributes.position.array;
                 for (let i = 0; i < flowParticlesCount; i++) {
                     const idx = i * 3;
@@ -438,14 +478,12 @@
                     let my = pPositions[idx+1] / visualScale;
                     let mz = pPositions[idx+2] / visualScale;
 
-                    // Each particle integrates the vector field independently based on its position
                     const pField = getVectorField(mx, my, mz, time, currentAttraction, targetX, targetY, targetZ);
                     
                     mx += pField.dx * dt;
                     my += pField.dy * dt;
                     mz += pField.dz * dt;
 
-                    // Keep particles contained within a bounding volume if they stray too far
                     if (Math.sqrt(mx*mx + my*my + mz*mz) > 25.0) {
                         mx = (Math.random() - 0.5) * 15.0;
                         my = (Math.random() - 0.5) * 15.0;
